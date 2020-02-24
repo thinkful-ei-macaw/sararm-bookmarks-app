@@ -1,0 +1,42 @@
+body{
+  background-color: rgb(7, 7, 6);
+  font-family: Arial, Helvetica, sans-serif;
+  
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  /* height: 500px;
+  width: 90%;
+  padding: 50px;
+  display: inline-block;
+  text-align: center;
+  border: solid, 5px, rgb(233, 7, 7); */
+  box-sizing: border-box;
+  background-color: rgb(121, 117, 110);
+  width: 90%;
+  height: 90%;
+  padding: 40px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+
+
+#new-bookmark-description {
+  height: 200px;
+  width: 90%;
+ 
+
+}
+
+@media screen and (max-width: 600px){
+
+}
+   
+@media screen and (min-width: 768px){
+  
+}
