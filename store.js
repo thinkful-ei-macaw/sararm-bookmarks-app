@@ -2,9 +2,9 @@
 
 // The store object for the first 3 wireframes has been provided, and you will be responsible for creating the store object for the final "Form Error" wireframe.
 
-//initial bookmark
-const store = {
-  bookmarks: [
+//initial view
+
+const bookmarks = [
     {
       id: 'x56w',
       title: 'Title 1',
@@ -12,54 +12,75 @@ const store = {
       url: 'http://www.title1.com',
       description: 'lorem ipsum dolor sit',
       expanded: false
-    },
-    {
-      id: '6ffw',
-      title: 'Title 2',
-      rating: 5,
-      url: 'http://www.title2.com',
-      description: 'dolorum tempore deserunt',
-      expanded: false
-    } 
-  ],
-  adding: false,
-  error: null,
-  filter: 0
-};
+    }
+  ];
+let adding = false;
+let error = null;
+let filter = 0;
 
 
 //expanded view
-const store = {
-  bookmarks: [
-    {
-      id: '7ddr',
-      title: 'Title 11',
-      rating: 5,
-      url: 'http://www.title11.com',
-      description: 'lorem ipsum dolor',
-      expanded: true
-    }
-    ...
-  ],
-  adding: false,
-  error: null,
-  filter: 0
-};
+// const bookmarks = [
+//   {
+//     id: 'x56w',
+//     title: 'Title 1',
+//     rating: 3,
+//     url: 'http://www.title1.com',
+//     description: 'lorem ipsum dolor sit',
+//     expanded: true
+//   }
+// ];
+// let adding = false;
+// let error = null;
+// let filter = 0;
+
 
 
 
 //add bookmark view
-const store = {
-  bookmarks: [...],
-  adding: true,
-  error: null,
-  filter: 0
-};
+// const bookmarks = [. . .];
+// let adding = true;
+// let error = null;
+// let filter = 0;
 
 
+//error view
+// const bookmarks = [. . .];
+// let adding = true;
+// let error = 'something went wrong';
+// let filter = 0;
 
 
-
-export default{
-  store 
+function findById(id){
+  return this.bookmarks.find(currentItem => currentItem.id === id);
 }
+
+function findAndDelete(id){
+  return this.bookmarks = this.bookmarks.filter(currentItem => currentItem.id !== id);
+  // console.log(this.bookmarks);
+}
+
+function findAndUpdate(id, newData){
+  const currentItem = this.findById(id);
+  Object.assign(currentItem, newData);
+}
+
+function addItem(item){
+  this.bookmarks.push(item);
+}
+
+function setError(error){
+  this.error = error;
+}
+
+export default {
+  bookmarks,
+  adding,
+  error,
+  filter,
+  findById,
+  findAndDelete,
+  findAndUpdate,
+  addItem,
+  setError
+};

@@ -1,3 +1,6 @@
+'use strict';
+
+
 
 function listAPIFetch(...args){
 //fetch()
