@@ -10,21 +10,27 @@ import api from './api.js';
 /******** RENDER FUNCTIONS ********/
 
 
-function render(){
-  let filter = store.filter; 
-  let error = store.error;
-  let html = [generateInitialView(), generateItem()].join('');
+function render(id, expand){
     if(store.adding){
       $('main').html(generateAddBookmarkView());
     }
 
-  
+    else if(store.filter !== 0){
+      let html = [generateInitialView(), generateFilteredResults(store.filter)].join('')
+      $('main').html(html);;
+
+    }
+
+    else if(id !== undefined){
+      let html = generateExpandedView(id)
+      $(expand).html(html);
+    }
+
     else{
+      let html = [generateInitialView(), generateItem()].join('')
       $('main').html(html);
     };
-  
-    //if(isExpanded){}
-  
+
     //if(error){}
   
   };
@@ -40,40 +46,68 @@ function generateAddBookmarkView(){
   <div class="container">
   <h1>My Bookmarks</h1>
   <form id="new-bookmark-form" action="#">
-    <label for="new-bookmark-input">Add a new bookmark:</label>
-      <input type="text" id="new-bookmark-input" name="new-bookmark-input" placeholder="https//yourbookmarklinkhere"
-      >
+    <label for="name">Add a new bookmark:</label>
+      <input type="url" id="new-bookmark-input" class="new-bookmark" name="url" placeholder="https//yourbookmarklinkhere" 
+      required>
     <div class="description-container" >
-      <input type="text" id="new-bookmark-title>" name="new-bookmark-title" placeholder="Bookmark title">
-      <input type="text" id="new-bookmark-description" name="new-bookmark-description" placeholder="Add a description... (optional)">
+      <input type="text" id="new-bookmark-title" class="new-bookmark" name="title" placeholder="Bookmark title" required>
+      <select name="rating" class="rating-select">
+      <option value="1">1 star</option>
+      <option value="2">2 star</option>
+      <option value="3">3 star</option>
+      <option value="4">4 star</option>
+      <option value="5">5 star</option>
+    </select>
+      <input type="text" id="new-bookmark-description" class="new-bookmark" name="desc" placeholder="Add a description... (optional)">
     </div>  
-    <button class="add-bookmark-button" id=
-    "cancel-new-bookmark">Cancel</button>
-    <button class="add-new-bookmark-button" id="add-new-bookmark type="submit">Add</button>
+    <button id=
+    "cancel-new-bookmark" type="reset">Cancel</button>
+    <button type="submit" id="add-new-bookmark">Add</button>
   </form>
 </div>`
 };
 
+
 function generateItem(id){
+  const htmlArr = [];
   let itemArr = store.bookmarks;
-  console.log(itemArr[0].title);
+    for(let i = 0; i < itemArr.length; i++){
+      htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
+        ${itemArr[i].title}, 
+        Rating: ${itemArr[i].rating}
+        <button id="delete-bookmark">Delete</button>
+        </li>`)
+    }
+  return htmlArr;
+  };
 
-  itemArr.find
+function generateFilteredResults(filter){
+  const htmlArr = [];
+  let itemArr = store.ratingFilter(filter);
+  for(let i = 0; i < itemArr.length; i++){
+    htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
+      ${itemArr[i].title}, 
+      Rating: ${itemArr[i].rating}
+      <button id="delete-bookmark">Delete</button>
+      </li>`)
+  }
+return htmlArr;
+}
 
-
-
-  return `
-  <li class="bookmark-data">
-  ${itemArr[0].title}
-  </li>
- `
-};
-
-function generateExpandedView(){
-
+function generateExpandedView(id){
+  let expandedItem = store.bookmarks.find(item=> item.id === id)
+  store.expand(id)
+  return `<li class="bookmark-data"  data-item-id="${expandedItem.id}">
+  ${expandedItem.title}, 
+  Rating: ${expandedItem.rating}
+  Description: ${expandedItem.desc}
+  URL: <a href="${expandedItem.url}">Let's go</a>
+  <button id="delete-bookmark">Delete</button>
+  </li>`
 };
 
 function generateInitialView(){
+
   return `
   <div class="container">
     <h1>My Bookmarks</h1>
@@ -90,53 +124,84 @@ function generateInitialView(){
 }
 
 
-
-
 /******** EVENT HANDLERS ********/
 
-//handles what happens when the 'new bookmark' button is clicked
 
-//handles what happens when the add new bookmark button is clicked
 function handleNewBookmark(){
   $('main').on('click', '#new-bookmark', event => {
+    console.log('click');
     store.adding = true;
     render();
   })
 };
 
-//handles what happens when a rating-filter is selected
 function handleFilterSelect(){
   $('main').on('change', '.filter-select', event => {
     store.filter = $('.filter-select').val();
-    console.log(store.filter);
+    render();
   });
 }
 
-
-//handles what happens when the delete button is clicked
+function serializeJson(form) {
+  const formData = new FormData(form);
+  const obj = {};
+  formData.forEach((val, name) => obj[name] = val);
+  return JSON.stringify(obj);
+}
 
 
 function handleCreate(){
-//will need to grab all input data and make api call to update store, and update local store
+  $('main').on('submit', '#new-bookmark-form', event => {
+    event.preventDefault();
 
-//store.adding = false;
+    let formElement = document.querySelector("#new-bookmark-form")
+    const myFormData = serializeJson(formElement);
+  
+    api.createBookmark(myFormData)
+      .then((newItem) => {
+        store.addItem(newItem);
+        render();
+      })
+      store.adding = false;
+  });
 };
 
 
-
-//clears form, renders bookmark compressed view
 function handleCancelCreate(){
   $('main').on('click', '#cancel-new-bookmark', event => {
+    event.preventDefault();
     store.adding = false;
     render();
     })
   };
 
   function handleDelete(){
-    //find current target by id and make api call to update store, update local store
+  //find current target by id and make api call to update store, update local store
+  $('main').on('click', '#delete-bookmark', event => {
+    event.preventDefault();
+    const id = getItemId(event.currentTarget);
+    console.log(id)
+    api.deleteBookmark(id)
+      .then(() => {
+      store.findAndDelete(id);
+      render();
+    })
+  }); 
 };
 
+function handleExpand(){
+  $('main').on('click', '.bookmark-data', event => {
+    const id = getItemId(event.currentTarget);
+    let expand = event.currentTarget
+    render(id, expand);
+    })
+}
 
+function getItemId(item) {
+  return $(item)
+    .closest('.bookmark-data')
+    .data('item-id');
+};
 
 
 function bindEventListeners(){
@@ -145,6 +210,7 @@ function bindEventListeners(){
   handleNewBookmark();
   handleDelete();
   handleFilterSelect();
+  handleExpand();
   render()
 };
 
