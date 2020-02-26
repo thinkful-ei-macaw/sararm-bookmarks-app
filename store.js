@@ -6,8 +6,9 @@
 
 let bookmarks = [];
 let adding = false;
-let error = null;
+let error = {};
 let filter = 0;
+let editing = false;
 
 
 //expanded view
@@ -24,6 +25,7 @@ let filter = 0;
 // let adding = false;
 // let error = null;
 // let filter = 0;
+// let editing = false;
 
 
 
@@ -33,17 +35,19 @@ let filter = 0;
 // let adding = true;
 // let error = null;
 // let filter = 0;
-
+// let editing = false;
 
 //error view
 // const bookmarks = [. . .];
 // let adding = true;
 // let error = 'something went wrong';
 // let filter = 0;
+// let editing = false;
+
+
 
 function ratingFilter(filter){
   let filteredItems = this.bookmarks.filter(item => item.rating >= filter);
-  console.log(filteredItems);
   return filteredItems;
 }
 
@@ -64,13 +68,17 @@ function findAndDelete(id){
   return this.bookmarks = this.bookmarks.filter(currentItem => currentItem.id !== id);
 }
 
-function findAndUpdate(id, newData){
-  // const currentItem = this.findById(id);
-  // Object.assign(currentItem, newData);
+function findAndUpdate(id, newFormData){
+  const currentItem = this.findById(id);
+  let obj = JSON.parse(newFormData)
+  Object.assign(currentItem, obj)
+
+
 }
 
 function addItem(newItem){
   !newItem.expanded;
+  !newItem.editing;
   this.bookmarks.push(newItem);
 }
 
@@ -81,8 +89,9 @@ function setError(error){
 export default {
   bookmarks,
   adding,
+  editing,
   error,
-  filter,
+  filter,  
   findById,
   findAndDelete,
   findAndUpdate,

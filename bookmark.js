@@ -10,7 +10,9 @@ import api from './api.js';
 /******** RENDER FUNCTIONS ********/
 
 
-function render(id, expand){
+function render(id, expand, editID){
+  renderError();
+
     if(store.adding){
       $('main').html(generateAddBookmarkView());
     }
@@ -21,8 +23,12 @@ function render(id, expand){
 
     }
 
-    else if(id !== undefined){
-      
+    else if(store.editing){
+      let html = generateEditView(id)   
+      $('main').html(html);
+    }
+
+    else if(expand !== undefined){
       let html = generateExpandedView(id, expand)
       $(expand).html(html);
     }
@@ -31,11 +37,16 @@ function render(id, expand){
       let html = [generateInitialView(), generateItem()].join('')
       $('main').html(html);
     };
-
-    //if(error){}
-  
   };
   
+  function renderError() {
+    if (store.error.code) {
+      $('div.error-container').html(`${store.error.message}`)
+      console.log('render', store.error);
+    } else {
+      $('div.error-container').empty();
+    }
+  };
   
 
 /******** GENERATORS ********/
@@ -43,7 +54,7 @@ function render(id, expand){
 //generates html for Add new bookmark view
 function generateAddBookmarkView(){
 
-  return `
+  return `<div class="error-container"></div>
   <div class="title-container">
     <h1>My Bookmarks</h1>
   </div>
@@ -78,9 +89,21 @@ function generateItem(id){
     for(let i = 0; i < itemArr.length; i++){
       htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
         ${itemArr[i].title} 
-        Rating: ${itemArr[i].rating}
-        <button id="delete-bookmark"></button>
-        </li>`)
+  <span class="star-rating">
+  <form id="${itemArr[i].id}">
+  <input type="checkbox" name="rating" value="1" 
+  ${itemArr[i].rating >=  1 ? 'checked' : ''}>
+  <input type="checkbox" name="rating" value="2"
+  ${itemArr[i].rating >=  2 ? 'checked' : ''}>
+  <input type="checkbox" name="rating" value="3"
+  ${itemArr[i].rating >=  3 ? 'checked' : ''}>
+  <input type="checkbox" name="rating" value="4"
+  ${itemArr[i].rating >=  4 ? 'checked' : ''}>
+  <input type="checkbox" name="rating" value="5"
+  ${itemArr[i].rating >=  5 ? 'checked' : ''}>
+  </form>  
+  <button id="delete-bookmark"></button></span> 
+  </li>`)
     }
   return htmlArr.join(' ');
   };
@@ -90,40 +113,105 @@ function generateFilteredResults(filter){
   let itemArr = store.ratingFilter(filter);
   for(let i = 0; i < itemArr.length; i++){
     htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
-      ${itemArr[i].title}, 
-      Rating: ${itemArr[i].rating}
-      <button id="delete-bookmark"></button>
+      ${itemArr[i].title} 
+      <span class="star-rating"><form id="${itemArr[i].id}">
+      <input type="checkbox" name="rating" value="1" 
+      ${itemArr[i].rating >=  1 ? 'checked' : ''}>
+      <input type="checkbox" name="rating" value="2"
+      ${itemArr[i].rating >=  2 ? 'checked' : ''}>
+      <input type="checkbox" name="rating" value="3"
+      ${itemArr[i].rating >=  3 ? 'checked' : ''}>
+      <input type="checkbox" name="rating" value="4"
+      ${itemArr[i].rating >=  4 ? 'checked' : ''}>
+      <input type="checkbox" name="rating" value="5"
+      ${itemArr[i].rating >=  5 ? 'checked' : ''}>
+    </form> 
+      <button id="delete-bookmark"></button> </span> 
       </li>`)
   }
 return htmlArr.join('');
 }
 
 function generateExpandedView(id, expand){
-  let expandedItem = store.bookmarks.find(item=> item.id === id)
   let item = store.findById(id);
-
   if(item.expanded === true){
     store.collapse(id);
     $(expand).find('.expanded-bookmark-data').remove();
     return `${item.title} 
-    Rating: ${item.rating}
-    <button id="delete-bookmark"></button>`;
+    <span class="star-rating"><form id="${item.id}">
+    <input type="checkbox" name="rating" value="1" 
+    ${item.rating >= 1 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="2"
+    ${item.rating >= 2 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="3"
+    ${item.rating >= 3 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="4"
+    ${item.rating >= 4 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="5"
+    ${item.rating >=  5 ? 'checked' : ''}>
+  </form>
+    <button id="delete-bookmark"></button></span>  `;
   }
   else{
     store.expand(id);
-    return `<li class="expanded-bookmark-data"  data-item-id="${expandedItem.id}">
-    ${expandedItem.title}, 
-    Rating: ${expandedItem.rating}
-    Description: ${expandedItem.desc}
-    URL: <a href="${expandedItem.url}">Let's go</a>
-    <button id="delete-bookmark"></button>
+    return `<li class="expanded-bookmark-data"  data-item-id="${item.id}">
+    ${item.title}   
+    <span class="star-rating"><form id="${item.id}">
+    <input type="checkbox" name="rating" value="1" 
+    ${item.rating >= 1 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="2"
+    ${item.rating >= 2 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="3"
+    ${item.rating >= 3 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="4"
+    ${item.rating >= 4 ? 'checked' : ''}>
+    <input type="checkbox" name="rating" value="5"
+    ${item.rating >= 5 ? 'checked' : ''}>
+  </form></span>  
+    <div class="description-container">
+    Description: ${item.desc} 
+    URL: <a class="link" href ="${item.url}">Visit this site</a></div>
+    <button id="delete-bookmark"></button> <button id="edit-bookmark"></button>
     </li>`
   };
+}
+
+
+
+function generateEditView(id){
+  let item = store.findById(id);
+  return `<div class="error-container"></div><div class="title-container">
+  <h1>My Bookmarks</h1>
+</div>
+<div class="url-and-title">
+<form class="edit-bookmark-form" data-item-id="${item.id}" action="#">
+  <label for="name">URL goes here:</label>
+    <input type="url" id="new-bookmark-input" class="edit-bookmark" name="url" value="${item.url}" 
+    required>
+  <label for="name">Bookmark name goes here:</label>
+    <input type="text" id="new-bookmark-title" class="edit-bookmark" name="title" value="${item.title}" required>
+    <select name="rating" class="rating-select">
+    <option value="1">1 star</option>
+    <option value="2">2 star</option>
+    <option value="3">3 star</option>
+    <option value="4">4 star</option>
+    <option value="5">5 star</option>
+  </div>
+  </select>
+  <div class="description-container">
+    <input type="text" id="new-bookmark-description" class="new-bookmark" name="desc" placeholder="Add a description... (required)" required>
+  </div>  
+  <button id=
+  "cancel-edit" type="reset">Cancel</button>
+  <button type="submit" id="edit-bookmark-submit">Submit</button>
+</form>`
+
 }
 
 function generateInitialView(){
 
   return `
+  <div class="error-container"></div>
   <div class="title-container">
     <h1>My Bookmarks</h1>
       <div class="title-button-container">
@@ -146,7 +234,6 @@ function generateInitialView(){
 
 function handleNewBookmark(){
   $('main').on('click', '#new-bookmark', event => {
-    console.log('click');
     store.adding = true;
     render();
   })
@@ -197,23 +284,65 @@ function handleCancelCreate(){
   $('main').on('click', '#delete-bookmark', event => {
     event.preventDefault();
     const id = getItemId(event.currentTarget);
-    console.log(id)
     api.deleteBookmark(id)
       .then(() => {
-      store.findAndDelete(id);
-      render();
+        store.findAndDelete(id);
+        render();
     })
   }); 
 };
+
+function handleEditButton(){
+  $('main').on('click', '#edit-bookmark', event => {
+    event.preventDefault();
+    const id = getItemId(event.currentTarget);
+    store.editing = true;
+    store.collapse(id);
+    render(id);
+
+  });
+}
+
+function handleCancelEdit(){
+  $('main').on('click', '#cancel-edit', event => {
+    event.preventDefault();
+    store.editing = false;
+    render();
+  });
+}
+
+function handleClickLink(){
+  $('main').on('click', '.link', event=>{
+    event.preventDefault();
+    let link = $(event.currentTarget);
+    window.open(link.attr("href"), event.currentTarget);
+  })
+}
+
+function handleSubmitEdit(){
+  $('main').on('submit', '.edit-bookmark-form', event => {
+    event.preventDefault();
+
+    const id = $(event.currentTarget).data('item-id') ;
+    let formElement = document.querySelector(".edit-bookmark-form")
+    const newFormData = serializeJson(formElement);
+
+    api.updateBookmark(id, newFormData)
+      .then(() => {
+        store.findAndUpdate(id, newFormData);
+        render();
+    })
+    store.editing = false;
+  });
+}
 
 function handleExpand(){
   $('main').on('click', '.bookmark-data', event => {
     event.preventDefault();
 
     const id = getItemId(event.currentTarget);
-    let expand = event.currentTarget;
-    console.log(expand);
-    render(id, expand);
+    let item = event.currentTarget;
+    render(id, item);
     })
 }
 
@@ -231,6 +360,10 @@ function bindEventListeners(){
   handleDelete();
   handleFilterSelect();
   handleExpand();
+  handleEditButton();
+  handleCancelEdit();
+  handleSubmitEdit();
+  handleClickLink()
   render()
 };
 
@@ -239,5 +372,6 @@ $(bindEventListeners);
 
 export default{
   render,
+  renderError,
   bindEventListeners
 };
