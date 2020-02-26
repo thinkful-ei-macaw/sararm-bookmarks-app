@@ -48,7 +48,11 @@ function ratingFilter(filter){
 }
 
 function expand(id){
-  return (this.bookmarks.find(item=> item.id === id)).expanded = true;
+  return this.bookmarks.find(item=> item.id === id).expanded = true;
+}
+
+function collapse(id){
+  return this.bookmarks.find(item=> item.id === id).expanded = false;
 
 }
 
@@ -66,7 +70,7 @@ function findAndUpdate(id, newData){
 }
 
 function addItem(newItem){
-  newItem.expanded = false;
+  !newItem.expanded;
   this.bookmarks.push(newItem);
 }
 
@@ -85,5 +89,6 @@ export default {
   addItem,
   setError,
   expand,
+  collapse,
   ratingFilter
 };

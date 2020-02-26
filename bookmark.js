@@ -15,14 +15,15 @@ function render(id, expand){
       $('main').html(generateAddBookmarkView());
     }
 
-    else if(store.filter !== 0){
+    else if(store.filter !== 0 && !id){
       let html = [generateInitialView(), generateFilteredResults(store.filter)].join('')
-      $('main').html(html);;
+      $('main').html(html);
 
     }
 
     else if(id !== undefined){
-      let html = generateExpandedView(id)
+      
+      let html = generateExpandedView(id, expand)
       $(expand).html(html);
     }
 
@@ -43,13 +44,15 @@ function render(id, expand){
 function generateAddBookmarkView(){
 
   return `
-  <div class="container">
-  <h1>My Bookmarks</h1>
+  <div class="title-container">
+    <h1>My Bookmarks</h1>
+  </div>
+  <div class="url-and-title">
   <form id="new-bookmark-form" action="#">
-    <label for="name">Add a new bookmark:</label>
+    <label for="name">URL goes here:</label>
       <input type="url" id="new-bookmark-input" class="new-bookmark" name="url" placeholder="https//yourbookmarklinkhere" 
       required>
-    <div class="description-container" >
+    <label for="name">Bookmark name goes here:</label>
       <input type="text" id="new-bookmark-title" class="new-bookmark" name="title" placeholder="Bookmark title" required>
       <select name="rating" class="rating-select">
       <option value="1">1 star</option>
@@ -57,14 +60,15 @@ function generateAddBookmarkView(){
       <option value="3">3 star</option>
       <option value="4">4 star</option>
       <option value="5">5 star</option>
+    </div>
     </select>
+    <div class="description-container">
       <input type="text" id="new-bookmark-description" class="new-bookmark" name="desc" placeholder="Add a description... (optional)">
     </div>  
     <button id=
     "cancel-new-bookmark" type="reset">Cancel</button>
     <button type="submit" id="add-new-bookmark">Add</button>
-  </form>
-</div>`
+  </form>`
 };
 
 
@@ -73,12 +77,12 @@ function generateItem(id){
   let itemArr = store.bookmarks;
     for(let i = 0; i < itemArr.length; i++){
       htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
-        ${itemArr[i].title}, 
+        ${itemArr[i].title} 
         Rating: ${itemArr[i].rating}
-        <button id="delete-bookmark">Delete</button>
+        <button id="delete-bookmark"></button>
         </li>`)
     }
-  return htmlArr;
+  return htmlArr.join(' ');
   };
 
 function generateFilteredResults(filter){
@@ -88,38 +92,51 @@ function generateFilteredResults(filter){
     htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
       ${itemArr[i].title}, 
       Rating: ${itemArr[i].rating}
-      <button id="delete-bookmark">Delete</button>
+      <button id="delete-bookmark"></button>
       </li>`)
   }
-return htmlArr;
+return htmlArr.join('');
 }
 
-function generateExpandedView(id){
+function generateExpandedView(id, expand){
   let expandedItem = store.bookmarks.find(item=> item.id === id)
-  store.expand(id)
-  return `<li class="bookmark-data"  data-item-id="${expandedItem.id}">
-  ${expandedItem.title}, 
-  Rating: ${expandedItem.rating}
-  Description: ${expandedItem.desc}
-  URL: <a href="${expandedItem.url}">Let's go</a>
-  <button id="delete-bookmark">Delete</button>
-  </li>`
-};
+  let item = store.findById(id);
+
+  if(item.expanded === true){
+    store.collapse(id);
+    $(expand).find('.expanded-bookmark-data').remove();
+    return `${item.title} 
+    Rating: ${item.rating}
+    <button id="delete-bookmark"></button>`;
+  }
+  else{
+    store.expand(id);
+    return `<li class="expanded-bookmark-data"  data-item-id="${expandedItem.id}">
+    ${expandedItem.title}, 
+    Rating: ${expandedItem.rating}
+    Description: ${expandedItem.desc}
+    URL: <a href="${expandedItem.url}">Let's go</a>
+    <button id="delete-bookmark"></button>
+    </li>`
+  };
+}
 
 function generateInitialView(){
 
   return `
-  <div class="container">
+  <div class="title-container">
     <h1>My Bookmarks</h1>
-    <button class="new-bookmark-button" id="new-bookmark">Add New</button>
-    <select name="filter-bookmark" class="filter-select">
-      <option value="0">Minimum Rating</option>
-      <option value="1">1 star</option>
-      <option value="2">2 star</option>
-      <option value="3">3 star</option>
-      <option value="4">4 star</option>
-      <option value="5">5 star</option>
-    </select>
+      <div class="title-button-container">
+        <button class="new-bookmark-button" id="new-bookmark">Add New</button>
+        <select name="filter-bookmark" class="filter-select">
+        <option value="0">Minimum Rating</option>
+        <option value="1">1 star</option>
+        <option value="2">2 star</option>
+        <option value="3">3 star</option>
+        <option value="4">4 star</option>
+        <option value="5">5 star</option>
+      </select>
+    </div>
   </div>`
 }
 
@@ -191,8 +208,11 @@ function handleCancelCreate(){
 
 function handleExpand(){
   $('main').on('click', '.bookmark-data', event => {
+    event.preventDefault();
+
     const id = getItemId(event.currentTarget);
-    let expand = event.currentTarget
+    let expand = event.currentTarget;
+    console.log(expand);
     render(id, expand);
     })
 }
