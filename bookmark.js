@@ -15,35 +15,47 @@ function render(id, expand, editID){
 
     if(store.adding){
       $('main').html(generateAddBookmarkView());
+      let view = 'adding';
+      generateCodeBlock(view);
     }
 
     else if(store.filter !== 0 && !id){
       let html = [generateInitialView(), generateFilteredResults(store.filter)].join('')
       $('main').html(html);
-
+      let view = 'filter';
+      generateCodeBlock(view);
     }
 
     else if(store.editing){
       let html = generateEditView(id)   
       $('main').html(html);
+      let view = 'editing';
+      generateCodeBlock(view);
     }
 
     else if(expand !== undefined){
       let html = generateExpandedView(id, expand)
       $(expand).html(html);
+      let view = 'expanded';
+      generateCodeBlock(view);
     }
 
     else{
       let html = [generateInitialView(), generateItem()].join('')
       $('main').html(html);
+      let view = 'initial';
+      generateCodeBlock(view);
+
     };
   };
   
   function renderError() {
     if (store.error.code) {
       $('div.error-container').html(`${store.error.message}`)
-      console.log('render', store.error);
-    } else {
+      let view = 'error';
+      generateCodeBlock(view);
+    } 
+    else {
       $('div.error-container').empty();
     }
   };
@@ -121,8 +133,7 @@ function generateExpandedView(id, expand){
     return `${item.title} 
     <span class="star-rating"><form id="${item.id}">
     ${generateRatings(id)}
-    </form><button id="delete-bookmark"></button></span>
-    `;
+    </form><button id="delete-bookmark"></button></span>`;
   }
   else{
     store.expand(id);
@@ -140,34 +151,15 @@ function generateExpandedView(id, expand){
 }
 
 function generateRatings(id){
-    let arr = [];
-    
-    // if(!id){
-    //   let items = store.bookmarks
-    //   //let rating = [];
-    //   console.log(items)
-      
-    
-
-      // for (let j = 0; j < rating.length; j++){
-      //   for (let i = 0; i < 5; i++){
-      //     arr.push(`<input type="checkbox" name="rating" value="${i}"
-      //     ${rating[j] >= i ? 'checked' : ''}></input>`)}
-      //   }
-      //}
-
-    // else{
-      console.log(id);
-      let item = store.findById(id);
-      let rating = [item.rating];
-      console.log(item.rating);
-      for (let i = 0; i < 5; i++){
-        arr.push(`<input type="checkbox" name="rating" value="${i}"
-        ${rating > i ? 'checked' : ''}></input>`)}
-    // }
+  let arr = [];
+  let item = store.findById(id);
+  let rating = [item.rating];
+  for (let i = 0; i < 5; i++){
+    arr.push(`<input type="checkbox" name="rating" value="${i}"
+    ${rating > i ? 'checked' : ''}></input>`)
+  }
 
   return arr.join(' ')
-  
 }
 
 function generateEditView(id){
@@ -198,6 +190,73 @@ function generateEditView(id){
   <button type="submit" id="edit-bookmark-submit">Submit</button>
 </form>`
 
+}
+
+function generateCodeBlock(view){
+  
+  if(view === 'initial'){
+    $('code').html(`'inital store state'
+    let bookmarks = [];
+    let adding = false;
+    let error = {};
+    let filter = 0;
+    let editing = false;` )
+  }
+
+  if(view === 'expanded'){
+    $('code').html(`'expanded view store state'
+    const bookmarks = [
+      {
+        id: 'x56w',
+        title: 'Title 1',
+        rating: 3,
+        url: 'http://www.title1.com',
+        description: 'lorem ipsum dolor sit',
+        expanded: true
+      }
+    ];
+    let adding = false;
+    let error = null;
+    let filter = 0;
+    let editing = false;`)
+  }
+
+  if(view === 'adding'){
+    $('code').html(`'add bookmark view store state'
+    const bookmarks = [. . .];
+    let adding = true;
+    let error = null;
+    let filter = 0;
+    let editing = false;`)
+  }
+
+  if(view === 'editing'){
+    $('code').html(`'edit bookmark view store state'
+    const bookmarks = [. . .];
+    let adding = false;
+    let error = null;
+    let filter = 0;
+    let editing = true;`)
+  }
+
+  if(view === 'filter'){
+    $('code').html(`'filter bookmark view store state'
+    const bookmarks = [. . .];
+    let adding = false;
+    let error = null;
+    let filter = ${store.filter};
+    let editing = false;`)
+  }
+
+  if(view === 'error'){
+    $('code').html(`'edit bookmark view store state'
+    const bookmarks = [. . .];
+    let adding = false;
+    let error = ${store.error.message};
+    let filter = 0;
+    let editing = false;`)
+
+  }
 }
 
 function generateInitialView(){
