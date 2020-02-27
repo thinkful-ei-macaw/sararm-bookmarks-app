@@ -1,5 +1,71 @@
 'use strict';
 
+//this has all the store states for different views
+// function generateCodeBlock(view){
+
+//   if(view === 'initial'){
+//     $('code').html(`'inital store state'
+//     let bookmarks = [];
+//     let adding = false;
+//     let error = {};
+//     let filter = 0;
+//     let editing = false;`)
+//   }
+
+//   if(view === 'expanded'){
+//     $('code').html(`'expanded view store state'
+//       const bookmarks = [
+//         {
+//           id: 'x56w',
+//           title: 'Title 1',
+//           rating: 3,
+//           url: 'http://www.title1.com',
+//           description: 'lorem ipsum dolor sit',
+//           expanded: true
+//         }
+//       ];
+//       let adding = false;
+//       let error = null;
+//       let filter = 0;
+//       let editing = false;`)
+//   }
+
+//   if(view === 'adding'){
+//     $('code').html(`'add bookmark view store state'
+//       const bookmarks = [. . .];
+//       let adding = true;
+//       let error = null;
+//       let filter = 0;
+//       let editing = false;`)
+//   }
+
+//   if(view === 'editing'){
+//     $('code').html(`'edit bookmark view store state'
+//       const bookmarks = [. . .];
+//       let adding = false;
+//       let error = null;
+//       let filter = 0;
+//       let editing = true;`)
+//   }
+
+//   if(view === 'filter'){
+//     $('code').html(`'filter bookmark view store state'
+//       const bookmarks = [. . .];
+//       let adding = false;
+//       let error = null;
+//       let filter = ${store.filter};
+//       let editing = false;`)
+//   }
+
+//   if(view === 'error'){
+//     $('code').html(`'edit bookmark view store state'
+//       const bookmarks = [. . .];
+//       let adding = false;
+//       let error = ${store.error.message};
+//       let filter = 0;
+//       let editing = false;`)
+//   }
+// }
 
 let bookmarks = [];
 let adding = false;
