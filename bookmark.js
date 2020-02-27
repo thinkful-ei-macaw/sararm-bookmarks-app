@@ -3,14 +3,10 @@
 import store from './store.js';
 import api from './api.js';
 
-
-
-
-
 /******** RENDER FUNCTIONS ********/
 
 
-function render(id, expand, editID){
+function render(id, expand){
   renderError();
 
     if(store.adding){
@@ -45,7 +41,6 @@ function render(id, expand, editID){
       $('main').html(html);
       let view = 'initial';
       generateCodeBlock(view);
-
     };
   };
   
@@ -67,48 +62,46 @@ function render(id, expand, editID){
 function generateAddBookmarkView(){
 
   return `<div class="error-container"></div>
-  <div class="title-container">
-    <h1>My Bookmarks</h1>
-  </div>
-  <div class="url-and-title">
-  <form id="new-bookmark-form" action="#">
-    <label for="name">URL goes here:</label>
-      <input type="url" id="new-bookmark-input" class="new-bookmark" name="url" placeholder="https//yourbookmarklinkhere" 
-      required>
-    <label for="name">Bookmark name goes here:</label>
-      <input type="text" id="new-bookmark-title" class="new-bookmark" name="title" placeholder="Bookmark title" required>
-      <select name="rating" class="rating-select">
-      <option value="1">1 star</option>
-      <option value="2">2 star</option>
-      <option value="3">3 star</option>
-      <option value="4">4 star</option>
-      <option value="5">5 star</option>
+    <div class="title-container">
+      <h1>My Bookmarks</h1>
     </div>
-    </select>
-    <div class="description-container">
-      <input type="text" id="new-bookmark-description" class="new-bookmark" name="desc" placeholder="Add a description... (optional)">
-    </div>  
-    <button id=
-    "cancel-new-bookmark" type="reset">Cancel</button>
-    <button type="submit" id="add-new-bookmark">Add</button>
-  </form>`
+    <div class="url-and-title">
+    <form id="new-bookmark-form" action="#">
+      <label for="name">URL goes here:</label>
+        <input type="url" id="new-bookmark-input" class="new-bookmark" name="url" placeholder="https//yourbookmarklinkhere" 
+        required>
+      <label for="name">Bookmark name goes here:</label>
+        <input type="text" id="new-bookmark-title" class="new-bookmark" name="title" placeholder="Bookmark title" required>
+        <select name="rating" class="rating-select">
+          <option value="1">1 star</option>
+          <option value="2">2 star</option>
+          <option value="3">3 star</option>
+          <option value="4">4 star</option>
+          <option value="5">5 star</option>
+    </div>
+        </select>
+      <div class="description-container">
+        <input type="text" id="new-bookmark-description" class="new-bookmark" name="desc" placeholder="Add a description... (optional)">
+      </div>  
+        <button id="cancel-new-bookmark" type="reset">Cancel</button>
+        <button type="submit" id="add-new-bookmark">Add</button>
+      </form>`
 };
-
 
 function generateItem(id){
   const htmlArr = [];
   let itemArr = store.bookmarks;
-    for(let i = 0; i < itemArr.length; i++){
-      htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
-        ${itemArr[i].title} 
-  <span class="star-rating">
-  <form id="${itemArr[i].id}">
-  ${generateRatings(itemArr[i].id)}
-  </form><button id="delete-bookmark"></button></span>
-  </li>`)
-    }
+  for(let i = 0; i < itemArr.length; i++){
+    htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
+      ${itemArr[i].title} 
+      <span class="star-rating">
+      <form id="${itemArr[i].id}">
+      ${generateRatings(itemArr[i].id)}
+      </form><button id="delete-bookmark"></button></span>
+      </li>`)
+  }
   return htmlArr.join(' ');
-  };
+};
 
 function generateFilteredResults(filter){
   const htmlArr = [];
@@ -125,28 +118,30 @@ return htmlArr.join('');
 }
 
 function generateExpandedView(id, expand){
-
   let item = store.findById(id);
+
   if(item.expanded === true){
     store.collapse(id);
     $(expand).find('.expanded-bookmark-data').remove();
     return `${item.title} 
-    <span class="star-rating"><form id="${item.id}">
-    ${generateRatings(id)}
-    </form><button id="delete-bookmark"></button></span>`;
+      <span class="star-rating"><form id="${item.id}">
+      ${generateRatings(id)}
+      </form><button id="delete-bookmark"></button></span>`;
   }
+
   else{
     store.expand(id);
+
     return `<li class="expanded-bookmark-data"  data-item-id="${item.id}">
-    ${item.title}   
-    <span class="star-rating"><form id="${item.id}">
-    ${generateRatings(id)}
-    </form></span>  
-    <div class="description-container">
-      Description: ${item.desc} 
-      URL: <a class="link" href ="${item.url}">Visit this site</a></div>
-    <button id="delete-bookmark"></button> <button id="edit-bookmark"></button>
-    </li>`
+      ${item.title}   
+      <span class="star-rating"><form id="${item.id}">
+      ${generateRatings(id)}
+      </form></span>  
+      <div class="description-container">
+        Description: ${item.desc} 
+        URL: <a class="link" href ="${item.url}">Visit this site</a></div>
+      <button id="delete-bookmark"></button> <button id="edit-bookmark"></button>
+      </li>`
   };
 }
 
@@ -154,6 +149,7 @@ function generateRatings(id){
   let arr = [];
   let item = store.findById(id);
   let rating = [item.rating];
+
   for (let i = 0; i < 5; i++){
     arr.push(`<input type="checkbox" name="rating" value="${i}"
     ${rating > i ? 'checked' : ''}></input>`)
@@ -164,98 +160,96 @@ function generateRatings(id){
 
 function generateEditView(id){
   let item = store.findById(id);
-  return `<div class="error-container"></div><div class="title-container">
-  <h1>My Bookmarks</h1>
-</div>
-<div class="url-and-title">
-<form class="edit-bookmark-form" data-item-id="${item.id}" action="#">
-  <label for="name">URL goes here:</label>
-    <input type="url" id="new-bookmark-input" class="edit-bookmark" name="url" value="${item.url}" 
-    required>
-  <label for="name">Bookmark name goes here:</label>
-    <input type="text" id="new-bookmark-title" class="edit-bookmark" name="title" value="${item.title}" required>
-    <select name="rating" class="rating-select">
-    <option value="1">1 star</option>
-    <option value="2">2 star</option>
-    <option value="3">3 star</option>
-    <option value="4">4 star</option>
-    <option value="5">5 star</option>
+  return `
+  <div class="error-container"></div><div class="title-container">
+    <h1>My Bookmarks</h1>
   </div>
-  </select>
-  <div class="description-container">
-    <input type="text" id="new-bookmark-description" class="new-bookmark" name="desc" placeholder="Add a description... (required)" required>
-  </div>  
-  <button id=
-  "cancel-edit" type="reset">Cancel</button>
-  <button type="submit" id="edit-bookmark-submit">Submit</button>
-</form>`
-
+  <div class="url-and-title">
+    <form class="edit-bookmark-form" data-item-id="${item.id}" action="#">
+      <label for="name">URL goes here:</label>
+      <input type="url" id="new-bookmark-input" class="edit-bookmark" name="url" value="${item.url}" 
+      required>
+      <label for="name">Bookmark name goes here:</label>
+      <input type="text" id="new-bookmark-title" class="edit-bookmark" name="title" value="${item.title}" required>
+      <select name="rating" class="rating-select">
+        <option value="1">1 star</option>
+        <option value="2">2 star</option>
+        <option value="3">3 star</option>
+        <option value="4">4 star</option>
+        <option value="5">5 star</option>
+  </div>
+      </select>
+      <div class="description-container">
+        <input type="text" id="new-bookmark-description" class="new-bookmark" name="desc" placeholder="Add a description... (required)" required>
+      </div>  
+      <button id="cancel-edit" type="reset">Cancel</button>
+      <button type="submit" id="edit-bookmark-submit">Submit</button>
+    </form>`
 }
 
 function generateCodeBlock(view){
-  
+
   if(view === 'initial'){
     $('code').html(`'inital store state'
     let bookmarks = [];
     let adding = false;
     let error = {};
     let filter = 0;
-    let editing = false;` )
+    let editing = false;`)
   }
 
   if(view === 'expanded'){
     $('code').html(`'expanded view store state'
-    const bookmarks = [
-      {
-        id: 'x56w',
-        title: 'Title 1',
-        rating: 3,
-        url: 'http://www.title1.com',
-        description: 'lorem ipsum dolor sit',
-        expanded: true
-      }
-    ];
-    let adding = false;
-    let error = null;
-    let filter = 0;
-    let editing = false;`)
+      const bookmarks = [
+        {
+          id: 'x56w',
+          title: 'Title 1',
+          rating: 3,
+          url: 'http://www.title1.com',
+          description: 'lorem ipsum dolor sit',
+          expanded: true
+        }
+      ];
+      let adding = false;
+      let error = null;
+      let filter = 0;
+      let editing = false;`)
   }
 
   if(view === 'adding'){
     $('code').html(`'add bookmark view store state'
-    const bookmarks = [. . .];
-    let adding = true;
-    let error = null;
-    let filter = 0;
-    let editing = false;`)
+      const bookmarks = [. . .];
+      let adding = true;
+      let error = null;
+      let filter = 0;
+      let editing = false;`)
   }
 
   if(view === 'editing'){
     $('code').html(`'edit bookmark view store state'
-    const bookmarks = [. . .];
-    let adding = false;
-    let error = null;
-    let filter = 0;
-    let editing = true;`)
+      const bookmarks = [. . .];
+      let adding = false;
+      let error = null;
+      let filter = 0;
+      let editing = true;`)
   }
 
   if(view === 'filter'){
     $('code').html(`'filter bookmark view store state'
-    const bookmarks = [. . .];
-    let adding = false;
-    let error = null;
-    let filter = ${store.filter};
-    let editing = false;`)
+      const bookmarks = [. . .];
+      let adding = false;
+      let error = null;
+      let filter = ${store.filter};
+      let editing = false;`)
   }
 
   if(view === 'error'){
     $('code').html(`'edit bookmark view store state'
-    const bookmarks = [. . .];
-    let adding = false;
-    let error = ${store.error.message};
-    let filter = 0;
-    let editing = false;`)
-
+      const bookmarks = [. . .];
+      let adding = false;
+      let error = ${store.error.message};
+      let filter = 0;
+      let editing = false;`)
   }
 }
 
@@ -278,7 +272,6 @@ function generateInitialView(){
     </div>
   </div>`
 }
-
 
 /******** EVENT HANDLERS ********/
 
@@ -304,7 +297,6 @@ function serializeJson(form) {
   return JSON.stringify(obj);
 }
 
-
 function handleCreate(){
   $('main').on('submit', '#new-bookmark-form', event => {
     event.preventDefault();
@@ -317,7 +309,7 @@ function handleCreate(){
         store.addItem(newItem);
         render();
       })
-      store.adding = false;
+    store.adding = false;
   });
 };
 
@@ -327,13 +319,14 @@ function handleCancelCreate(){
     event.preventDefault();
     store.adding = false;
     render();
-    })
-  };
+  })
+};
 
   function handleDelete(){
   //find current target by id and make api call to update store, update local store
   $('main').on('click', '#delete-bookmark', event => {
     event.preventDefault();
+
     const id = getItemId(event.currentTarget);
     api.deleteBookmark(id)
       .then(() => {
@@ -346,17 +339,18 @@ function handleCancelCreate(){
 function handleEditButton(){
   $('main').on('click', '#edit-bookmark', event => {
     event.preventDefault();
+
     const id = getItemId(event.currentTarget);
     store.editing = true;
     store.collapse(id);
     render(id);
-
   });
 }
 
 function handleCancelEdit(){
   $('main').on('click', '#cancel-edit', event => {
     event.preventDefault();
+
     store.editing = false;
     render();
   });
@@ -365,6 +359,7 @@ function handleCancelEdit(){
 function handleClickLink(){
   $('main').on('click', '.link', event=>{
     event.preventDefault();
+
     let link = $(event.currentTarget);
     window.open(link.attr("href"), event.currentTarget);
   })
@@ -394,7 +389,7 @@ function handleExpand(){
     const id = getItemId(event.currentTarget);
     let item = event.currentTarget;
     render(id, item);
-    })
+  })
 }
 
 function getItemId(item) {

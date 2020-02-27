@@ -33,7 +33,6 @@ function listAPIFetch(...args){
   })
 
   .then((data)=>  {
-
     //if there's an error, place the error message from the JSON object into our error obj
     if (error){
       error.message = data.message;
@@ -42,7 +41,6 @@ function listAPIFetch(...args){
       //reject the promise using our error obj
       return Promise.reject(error);
     }
-
     //if there's no error in the data object, return it as normal
     return data
   });
@@ -50,12 +48,10 @@ function listAPIFetch(...args){
 
 
 function getBookmark(){
-
   return listAPIFetch(`${baseURL}`);
 }
 
 function createBookmark(myFormData){
-
  return listAPIFetch(`${baseURL}`, {
     method: 'POST',
     headers: {

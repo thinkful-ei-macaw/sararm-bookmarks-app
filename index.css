@@ -1,8 +1,7 @@
 body{
   background-color:lightslategrey;
   font-family: Arial, Helvetica, sans-serif;
-  font: white;
-  
+  font: white;  
 }
 
 .bookmark-data {
@@ -33,12 +32,6 @@ input[type=checkbox] {
 input[type=checkbox]:checked {
   background-color: gold;
 }
-
-/* .star {
-    height: 20px;  
-    width: 20px;
-  https://toppng.com/uploads/preview/5-point-stars-png-star-icon-flat-11562958768wpf63hu4tq.png
-} */
 
 .error-container {
   color: red;
@@ -117,12 +110,4 @@ select {
   border-radius: 50%;
   border: transparent;
   margin: auto;
-}
-
-@media screen and (max-width: 600px){
-
-}
-   
-@media screen and (min-width: 768px){
-  
 }
