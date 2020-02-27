@@ -91,18 +91,8 @@ function generateItem(id){
         ${itemArr[i].title} 
   <span class="star-rating">
   <form id="${itemArr[i].id}">
-  <input type="checkbox" name="rating" value="1" 
-  ${itemArr[i].rating >=  1 ? 'checked' : ''}>
-  <input type="checkbox" name="rating" value="2"
-  ${itemArr[i].rating >=  2 ? 'checked' : ''}>
-  <input type="checkbox" name="rating" value="3"
-  ${itemArr[i].rating >=  3 ? 'checked' : ''}>
-  <input type="checkbox" name="rating" value="4"
-  ${itemArr[i].rating >=  4 ? 'checked' : ''}>
-  <input type="checkbox" name="rating" value="5"
-  ${itemArr[i].rating >=  5 ? 'checked' : ''}>
-  </form>  
-  <button id="delete-bookmark"></button></span> 
+  ${generateRatings(itemArr[i].id)}
+  </form><button id="delete-bookmark"></button></span>
   </li>`)
     }
   return htmlArr.join(' ');
@@ -115,68 +105,70 @@ function generateFilteredResults(filter){
     htmlArr.push(`<li class="bookmark-data"  data-item-id="${itemArr[i].id}">
       ${itemArr[i].title} 
       <span class="star-rating"><form id="${itemArr[i].id}">
-      <input type="checkbox" name="rating" value="1" 
-      ${itemArr[i].rating >=  1 ? 'checked' : ''}>
-      <input type="checkbox" name="rating" value="2"
-      ${itemArr[i].rating >=  2 ? 'checked' : ''}>
-      <input type="checkbox" name="rating" value="3"
-      ${itemArr[i].rating >=  3 ? 'checked' : ''}>
-      <input type="checkbox" name="rating" value="4"
-      ${itemArr[i].rating >=  4 ? 'checked' : ''}>
-      <input type="checkbox" name="rating" value="5"
-      ${itemArr[i].rating >=  5 ? 'checked' : ''}>
-    </form> 
-      <button id="delete-bookmark"></button> </span> 
-      </li>`)
+      ${generateRatings(itemArr[i].id)}
+    </form><button id="delete-bookmark"></button></span>
+    </li>`)
   }
 return htmlArr.join('');
 }
 
 function generateExpandedView(id, expand){
+
   let item = store.findById(id);
   if(item.expanded === true){
     store.collapse(id);
     $(expand).find('.expanded-bookmark-data').remove();
     return `${item.title} 
     <span class="star-rating"><form id="${item.id}">
-    <input type="checkbox" name="rating" value="1" 
-    ${item.rating >= 1 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="2"
-    ${item.rating >= 2 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="3"
-    ${item.rating >= 3 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="4"
-    ${item.rating >= 4 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="5"
-    ${item.rating >=  5 ? 'checked' : ''}>
-  </form>
-    <button id="delete-bookmark"></button></span>  `;
+    ${generateRatings(id)}
+    </form><button id="delete-bookmark"></button></span>
+    `;
   }
   else{
     store.expand(id);
     return `<li class="expanded-bookmark-data"  data-item-id="${item.id}">
     ${item.title}   
     <span class="star-rating"><form id="${item.id}">
-    <input type="checkbox" name="rating" value="1" 
-    ${item.rating >= 1 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="2"
-    ${item.rating >= 2 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="3"
-    ${item.rating >= 3 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="4"
-    ${item.rating >= 4 ? 'checked' : ''}>
-    <input type="checkbox" name="rating" value="5"
-    ${item.rating >= 5 ? 'checked' : ''}>
-  </form></span>  
+    ${generateRatings(id)}
+    </form></span>  
     <div class="description-container">
-    Description: ${item.desc} 
-    URL: <a class="link" href ="${item.url}">Visit this site</a></div>
+      Description: ${item.desc} 
+      URL: <a class="link" href ="${item.url}">Visit this site</a></div>
     <button id="delete-bookmark"></button> <button id="edit-bookmark"></button>
     </li>`
   };
 }
 
+function generateRatings(id){
+    let arr = [];
+    
+    // if(!id){
+    //   let items = store.bookmarks
+    //   //let rating = [];
+    //   console.log(items)
+      
+    
 
+      // for (let j = 0; j < rating.length; j++){
+      //   for (let i = 0; i < 5; i++){
+      //     arr.push(`<input type="checkbox" name="rating" value="${i}"
+      //     ${rating[j] >= i ? 'checked' : ''}></input>`)}
+      //   }
+      //}
+
+    // else{
+      console.log(id);
+      let item = store.findById(id);
+      let rating = [item.rating];
+      console.log(item.rating);
+      for (let i = 0; i < 5; i++){
+        arr.push(`<input type="checkbox" name="rating" value="${i}"
+        ${rating > i ? 'checked' : ''}></input>`)}
+    // }
+
+  return arr.join(' ')
+  
+}
 
 function generateEditView(id){
   let item = store.findById(id);
