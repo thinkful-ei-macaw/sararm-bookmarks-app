@@ -3,11 +3,7 @@ import api from './api.js'
 import bookmark from './bookmark.js';
 import store from './store.js'
 
-function main(){
-  $(() => {
-    $('body').before(`<div>${new Date()}</div>`);
-  });
-  
+function main(){  
   api.getBookmark()
     .then((items) => {
       items.forEach((item) => store.addItem(item));

@@ -76,7 +76,9 @@ justify-content: space-evenly;
 
 #new-bookmark-description {
   height: 200px;
-  width: 90%;
+  width: 80%;
+  margin: auto;
+  text-align: center;
 }
 
 select {
